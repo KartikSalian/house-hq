@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+# Env / secrets
+.env
+.env.local
+*.local
+# OS
+.DS_Store
+Thumbs.db
+# Editor
+.vscode/
+.idea/
+# Build output
+dist/
+build/
+# Python
+__pycache__/
+*.pyc
+# App database (local data)
+house.db
+# Admin recovery code (secret, stays on this machine only)
+admin_recovery.txt

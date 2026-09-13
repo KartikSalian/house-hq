@@ -1,0 +1,466 @@
+<title>House HQ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+  :root{
+    --txt:#f4f6fb; --muted:#aab3c5;
+    --accent:#7aa2ff; --accent2:#b78bff;
+    --green:#34d399; --yellow:#fbbf24; --red:#ff5d5f;
+    --glass:rgba(255,255,255,.07);
+    --glass-strong:rgba(255,255,255,.11);
+    --glass-line:rgba(255,255,255,.14);
+    --chip:rgba(255,255,255,.10);
+    --shadow:0 10px 40px rgba(0,0,0,.35);
+    --radius:20px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    background:#0a0c14;
+    position:relative;overflow-x:hidden;
+  }
+  /* ambient gradient mesh behind the glass */
+  body::before{
+    content:"";position:fixed;inset:-20%;z-index:-1;
+    background:
+      radial-gradient(40% 40% at 15% 12%, rgba(122,162,255,.55), transparent 60%),
+      radial-gradient(45% 45% at 85% 18%, rgba(183,139,255,.45), transparent 60%),
+      radial-gradient(50% 50% at 75% 90%, rgba(52,211,153,.28), transparent 60%),
+      radial-gradient(45% 45% at 10% 85%, rgba(255,93,95,.25), transparent 60%);
+    filter:blur(30px);
+  }
+  .wrap{max-width:520px;margin:0 auto;padding:0 16px calc(96px + env(safe-area-inset-bottom))}
+
+  header{position:sticky;top:0;z-index:20;padding:14px 0 10px;
+    background:linear-gradient(180deg, rgba(10,12,20,.85) 55%, transparent);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    margin:0 -16px;padding-left:16px;padding-right:16px;}
+  .brand{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .brand h1{font-size:22px;margin:0;letter-spacing:-.4px;font-weight:700}
+  .who{display:flex;align-items:center;gap:9px}
+  .avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+    font-weight:700;font-size:14px;color:#0a0c14;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+  .switch{background:var(--glass);border:1px solid var(--glass-line);color:var(--muted);
+    border-radius:20px;padding:7px 12px;font-size:12px;cursor:pointer;
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:.2s}
+  .switch:hover{color:var(--txt);background:var(--glass-strong)}
+
+  .redbanner{margin-top:12px;background:rgba(255,93,95,.16);border:1px solid rgba(255,93,95,.4);
+    color:#ffd0d1;border-radius:16px;padding:12px 14px;font-size:13px;display:none;
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:var(--shadow)}
+  .redbanner b{color:#fff}
+
+  .tabs{display:flex;gap:4px;margin-top:14px;background:var(--glass);padding:5px;
+    border-radius:16px;border:1px solid var(--glass-line);
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:var(--shadow)}
+  .tab{flex:1;text-align:center;padding:10px 0;border-radius:12px;font-size:13px;
+    color:var(--muted);cursor:pointer;font-weight:600;transition:.25s}
+  .tab.active{background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#0a0c14;box-shadow:0 4px 14px rgba(122,162,255,.4)}
+
+  h2.sec{font-size:12px;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted);
+    margin:22px 6px 10px;font-weight:600}
+
+  .card{background:var(--glass);border:1px solid var(--glass-line);border-radius:var(--radius);
+    padding:14px;margin-bottom:12px;backdrop-filter:blur(20px) saturate(150%);
+    -webkit-backdrop-filter:blur(20px) saturate(150%);box-shadow:var(--shadow);transition:.2s}
+  .card:hover{background:var(--glass-strong);transform:translateY(-1px)}
+  .row{display:flex;align-items:center;gap:11px}
+  .dot{width:11px;height:11px;border-radius:50%;flex:none}
+  .g{background:var(--green);box-shadow:0 0 12px rgba(52,211,153,.6)}
+  .y{background:var(--yellow);box-shadow:0 0 12px rgba(251,191,36,.6)}
+  .r{background:var(--red);box-shadow:0 0 0 4px rgba(255,93,95,.2),0 0 12px rgba(255,93,95,.7)}
+  .name{font-weight:650;font-size:15.5px;letter-spacing:-.2px}
+  .meta{color:var(--muted);font-size:12px;margin-top:3px;line-height:1.55}
+  .turn{display:inline-flex;align-items:center;gap:6px;background:var(--chip);
+    border:1px solid var(--glass-line);border-radius:20px;padding:3px 10px 3px 3px;font-size:12px;font-weight:600}
+  .mini{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;
+    font-weight:700;font-size:10px;color:#0a0c14}
+  .parts{display:flex}
+  .parts .mini{margin-left:-7px;border:2px solid rgba(10,12,20,.5)}
+  .parts .mini:first-child{margin-left:0}
+
+  .btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  button.act{border:1px solid var(--glass-line);background:var(--glass);color:var(--txt);
+    border-radius:12px;padding:9px 13px;font-size:12.5px;cursor:pointer;font-weight:600;
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:.18s}
+  button.act:hover{background:var(--glass-strong)}
+  button.act:active{transform:scale(.96)}
+  button.prim{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a0c14;
+    border:none;box-shadow:0 4px 14px rgba(122,162,255,.35)}
+  button.warn{background:rgba(255,93,95,.16);border-color:rgba(255,93,95,.4);color:#ffd0d1}
+  button.ghost{background:transparent;border-color:transparent;color:var(--muted)}
+  button.ghost:hover{color:var(--txt);background:var(--glass)}
+
+  .add{width:100%;border:1.5px dashed var(--glass-line);background:transparent;color:var(--muted);
+    border-radius:16px;padding:13px;font-size:13px;cursor:pointer;margin-top:6px;font-weight:600;transition:.2s}
+  .add:hover{border-color:var(--accent);color:var(--txt);background:var(--glass)}
+
+  .layers{margin-top:10px;border-top:1px solid var(--glass-line);padding-top:10px;display:none}
+  .layers.open{display:block}
+  .layer{display:flex;align-items:center;gap:9px;font-size:13.5px;padding:6px 0}
+  .layer input{width:18px;height:18px;accent-color:var(--accent)}
+  .layer .by{margin-left:auto;color:var(--muted);font-size:11px}
+
+  .prop{border-color:rgba(122,162,255,.45);background:rgba(122,162,255,.1)}
+  .votes{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .vote{font-size:11px;padding:4px 9px;border-radius:20px;background:var(--chip);
+    border:1px solid var(--glass-line);color:var(--muted)}
+  .vote.yes{color:var(--green)} .vote.no{color:var(--red)}
+
+  .score{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--glass-line)}
+  .bar{flex:1;height:9px;background:rgba(255,255,255,.08);border-radius:6px;overflow:hidden}
+  .bar>span{display:block;height:100%;border-radius:6px;transition:width .5s ease}
+  .val{font-weight:700;font-size:14px;min-width:56px;text-align:right}
+
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;
+    align-items:flex-end;justify-content:center;z-index:50;
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+  .modal.open{display:flex;animation:fade .2s ease}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .sheet{background:rgba(24,27,38,.75);border:1px solid var(--glass-line);
+    border-radius:26px 26px 0 0;width:100%;max-width:520px;
+    padding:20px 18px calc(30px + env(safe-area-inset-bottom));
+    backdrop-filter:blur(30px) saturate(150%);-webkit-backdrop-filter:blur(30px) saturate(150%);
+    box-shadow:0 -10px 50px rgba(0,0,0,.5);animation:slideup .28s cubic-bezier(.2,.8,.2,1)}
+  @keyframes slideup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  .sheet h3{margin:0 0 14px;font-size:17px;letter-spacing:-.3px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500}
+  .field input,.field select{width:100%;background:rgba(255,255,255,.08);border:1px solid var(--glass-line);
+    color:var(--txt);border-radius:13px;padding:12px;font-size:15px;outline:none;transition:.2s}
+  .field input:focus,.field select:focus{border-color:var(--accent);background:rgba(255,255,255,.12)}
+  .chips{display:flex;gap:7px;flex-wrap:wrap}
+  .pchip{padding:8px 13px;border-radius:20px;background:rgba(255,255,255,.08);
+    border:1px solid var(--glass-line);font-size:13px;cursor:pointer;color:var(--muted);transition:.18s}
+  .pchip.on{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a0c14;border-color:transparent}
+
+  .login{min-height:88vh;display:flex;flex-direction:column;justify-content:center;gap:14px}
+  .login h1{font-size:34px;margin:0 0 4px;letter-spacing:-1px;font-weight:750}
+  .login p{color:var(--muted);margin:0 0 14px;font-size:15px}
+  .pick{display:flex;align-items:center;gap:13px;background:var(--glass);border:1px solid var(--glass-line);
+    border-radius:var(--radius);padding:15px;cursor:pointer;
+    backdrop-filter:blur(20px) saturate(150%);-webkit-backdrop-filter:blur(20px) saturate(150%);
+    box-shadow:var(--shadow);transition:.2s}
+  .pick:hover{background:var(--glass-strong);transform:translateY(-2px)}
+  .pick:active{transform:scale(.98)}
+  .pick .avatar{width:44px;height:44px;font-size:18px}
+  .admintag{font-size:10px;background:var(--chip);border:1px solid var(--glass-line);
+    color:var(--muted);padding:3px 8px;border-radius:8px;margin-left:auto;font-weight:600}
+  .hint{color:var(--muted);font-size:11.5px;margin-top:6px;line-height:1.5}
+  .loading{color:var(--muted);text-align:center;padding:60px 0;font-size:15px}
+</style>
+
+<div class="wrap" id="app"><div class="loading">Loading…</div></div>
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+
+<script>
+window.onerror=function(msg,src,line,col){
+  var el=document.getElementById("app");
+  if(el) el.innerHTML='<div class="loading" style="color:#ffb4b5;text-align:left;white-space:pre-wrap">SCRIPT ERROR:\n'+msg+'\nline '+line+':'+col+'</div>';
+};
+const COLORS={Kartik:"#6ea8fe",Kalyan:"#2ecc71",Parva:"#f1c40f",Gautami:"#e67e22"};
+const DAY=86400000;
+
+// ---------- state loaded from backend ----------
+let S={people:[],admin:null,hasPin:{},items:[],chores:[],proposals:[]};
+let me=localStorage.getItem("hq_me")||null;
+let token=localStorage.getItem("hq_token")||null;
+let tab=localStorage.getItem("hq_tab")||"shop";
+
+async function load(){
+  try{
+    const r=await fetch("/api/state");
+    if(!r.ok) throw new Error("API returned HTTP "+r.status);
+    S=await r.json();
+    render();
+  }catch(e){
+    document.getElementById("app").innerHTML='<div class="loading" style="color:#ffb4b5;text-align:left;white-space:pre-wrap">LOAD ERROR:\n'+e.message+'\n\n'+(e.stack||'')+'</div>';
+  }
+}
+async function api(path,body,method){
+  const r=await fetch(path,{method:method||"POST",
+    headers:{"Content-Type":"application/json","X-Token":token||""},
+    body:body?JSON.stringify(body):undefined});
+  if(r.status===401){ // session expired / not logged in
+    logout(); return;
+  }
+  S=await r.json();
+  render();
+}
+
+// ---------- helpers ----------
+function turnPerson(o){
+  if(o.mode==="fixedpair") return o.pair[o.turnIdx%o.pair.length];
+  const list=o.participants||S.people;
+  return list[o.turnIdx%list.length];
+}
+function av(name,cls){return `<div class="${cls||'mini'}" style="background:${COLORS[name]||'#888'}">${name[0]}</div>`;}
+function dueDays(c){ return Math.ceil((c.lastDone+c.interval*DAY-Date.now())/DAY); }
+function choreState(c){
+  const due=c.urgent||(Date.now()>=c.lastDone+c.interval*DAY);
+  if(!due) return "ok";
+  return turnPerson(c)===me?"red":"yellow";
+}
+function itemState(it){
+  if(it.state==="ok") return "ok";
+  return turnPerson(it)===me?"red":"yellow";
+}
+
+// ---------- render ----------
+function render(){
+  const app=document.getElementById("app");
+  if(!me||!token){ app.innerHTML=loginView(); return; }
+  const reds=[...S.items.filter(i=>itemState(i)==="red").map(i=>i.name),
+              ...S.chores.filter(c=>choreState(c)==="red").map(c=>c.name)];
+  app.innerHTML=`
+   <header>
+     <div class="brand">
+       <h1>🏠 House HQ</h1>
+       <div class="who">${av(me,"avatar")}
+         <span style="font-size:13px">${me}${me===S.admin?' <span class="admintag">admin</span>':''}</span>
+         <button class="switch" onclick="logout()">switch</button></div>
+     </div>
+     <div class="redbanner" style="${reds.length?'display:block':''}">
+       🔴 <b>${reds.length} thing${reds.length!==1?'s':''} need you:</b> ${reds.join(", ")}
+       <span class="hint">(this is what would ping your phone)</span></div>
+     <div class="tabs">
+       <div class="tab ${tab==='shop'?'active':''}" onclick="setTab('shop')">Shopping</div>
+       <div class="tab ${tab==='chores'?'active':''}" onclick="setTab('chores')">Chores</div>
+       <div class="tab ${tab==='score'?'active':''}" onclick="setTab('score')">Scoreboard</div>
+     </div>
+   </header>
+   ${tab==='shop'?shopView():tab==='chores'?choreView():scoreView()}`;
+}
+function setTab(t){ tab=t; localStorage.setItem("hq_tab",t); render(); }
+async function logout(){
+  try{ await fetch("/api/logout",{method:"POST",headers:{"X-Token":token||""}}); }catch(e){}
+  me=null; token=null;
+  localStorage.removeItem("hq_me"); localStorage.removeItem("hq_token");
+  render();
+}
+
+function loginView(){
+  const people=S.people.length?S.people:["Kartik","Kalyan","Parva","Gautami"];
+  return `<div class="login"><div><h1>🏠 House HQ</h1><p>Tap your name to sign in</p></div>
+    ${people.map(p=>{
+      const set=S.hasPin&&S.hasPin[p];
+      return `<div class="pick" onclick="loginSheet('${p}')">${av(p,'avatar')}
+      <div><div style="font-weight:700">${p}</div>
+        <div class="hint">${set?'Enter your PIN':'Tap to set a PIN'}</div></div>
+      ${p===S.admin?'<span class="admintag">admin</span>':''}</div>`;}).join("")}
+    <p class="hint">Each person has their own PIN, so no one can sign in as someone else.</p></div>`;
+}
+
+function loginSheet(p){
+  const set=S.hasPin&&S.hasPin[p];
+  openSheet(`<h3>${set?`Welcome back, ${p}`:`Set a PIN for ${p}`}</h3>
+    <p class="hint" style="margin:0 0 12px">${set?'Enter your PIN to sign in.':'First time — choose a PIN (at least 4 digits). You will use it every time.'}</p>
+    <div class="field"><label>PIN</label>
+      <input id="pin" type="password" inputmode="numeric" autocomplete="off" placeholder="••••"></div>
+    <div id="pinerr" class="hint" style="color:#ffb4b5;display:none"></div>
+    <button class="act prim" style="width:100%;padding:12px" onclick="doLogin('${p}')">${set?'Sign in':'Set PIN & sign in'}</button>
+    ${set?`<div style="text-align:center"><button class="act ghost" style="border:none;color:var(--accent);margin-top:8px" onclick="resetSheet('${p}')">Forgot PIN?</button></div>`:''}`);
+  setTimeout(()=>{const el=document.getElementById("pin");if(el)el.focus();},100);
+}
+
+function resetSheet(p){
+  if(p===S.admin){ adminRecoverSheet(); return; }
+  openSheet(`<h3>Reset ${p}'s PIN</h3>
+    <p class="hint" style="margin:0 0 12px">The household admin (${S.admin}) enters their PIN to authorise this, then set a new PIN for ${p}.</p>
+    <div class="field"><label>Admin PIN (${S.admin})</label>
+      <input id="apin" type="password" inputmode="numeric" autocomplete="off" placeholder="••••"></div>
+    <div class="field"><label>New PIN for ${p} (at least 4 digits)</label>
+      <input id="npin" type="password" inputmode="numeric" autocomplete="off" placeholder="••••"></div>
+    <div id="rerr" class="hint" style="color:#ffb4b5;display:none"></div>
+    <button class="act prim" style="width:100%;padding:12px" onclick="doReset('${p}')">Reset PIN</button>`);
+}
+async function doReset(p){
+  const adminPin=document.getElementById("apin").value;
+  const newPin=document.getElementById("npin").value;
+  const err=document.getElementById("rerr");
+  const r=await fetch("/api/reset-pin",{method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({who:p,adminPin,newPin})});
+  const d=await r.json();
+  if(!r.ok){ err.textContent=d.error||"Reset failed"; err.style.display="block"; return; }
+  closeSheet(); load(); loginSheet(p);
+}
+
+function adminRecoverSheet(){
+  openSheet(`<h3>Reset admin PIN (${S.admin})</h3>
+    <p class="hint" style="margin:0 0 12px">Enter the recovery code from <b>admin_recovery.txt</b> in the app folder, then set a new PIN.</p>
+    <div class="field"><label>Recovery code</label>
+      <input id="rcode" autocomplete="off" placeholder="XXXX-XXXX-XXXX"></div>
+    <div class="field"><label>New admin PIN (at least 4 digits)</label>
+      <input id="rnpin" type="password" inputmode="numeric" autocomplete="off" placeholder="••••"></div>
+    <div id="arerr" class="hint" style="color:#ffb4b5;display:none"></div>
+    <button class="act prim" style="width:100%;padding:12px" onclick="doAdminRecover()">Reset admin PIN</button>`);
+}
+async function doAdminRecover(){
+  const code=document.getElementById("rcode").value;
+  const newPin=document.getElementById("rnpin").value;
+  const err=document.getElementById("arerr");
+  const r=await fetch("/api/admin-recover",{method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({code,newPin})});
+  const d=await r.json();
+  if(!r.ok){ err.textContent=d.error||"Recovery failed"; err.style.display="block"; return; }
+  closeSheet(); load(); loginSheet(S.admin);
+}
+async function doLogin(p){
+  const pin=document.getElementById("pin").value;
+  const err=document.getElementById("pinerr");
+  const r=await fetch("/api/login",{method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({who:p,pin})});
+  const d=await r.json();
+  if(!r.ok){ err.textContent=d.error||"Login failed"; err.style.display="block"; return; }
+  me=d.who; token=d.token;
+  localStorage.setItem("hq_me",me); localStorage.setItem("hq_token",token);
+  closeSheet(); load();
+}
+
+function shopView(){
+  const sections=["Kitchen","Bathroom","Bedroom","Hall"];
+  let html="";
+  sections.forEach(s=>{
+    const list=S.items.filter(i=>i.section===s);
+    html+=`<h2 class="sec">${s}</h2>`;
+    if(!list.length) html+=`<div class="hint" style="margin:0 4px 8px">No items yet</div>`;
+    list.forEach(it=>{
+      const st=itemState(it), tp=turnPerson(it);
+      const label=it.state==="ok"?"In stock":it.state==="low"?"Running low":"Empty";
+      html+=`<div class="card"><div class="row">
+        <span class="dot ${st==='ok'?'g':st==='yellow'?'y':'r'}"></span>
+        <div style="flex:1"><div class="name">${it.name}</div>
+          <div class="meta">${label} · next to buy: ${tp}${tp===me?' (you)':''}
+            ${it.participants.length<S.people.length?`<br>shared by: ${it.participants.join(", ")}`:''}</div></div>
+        <div class="turn">${av(tp)}<span>${tp}</span></div></div>
+        <div class="btns">
+          ${it.state==='ok'?`<button class="act" onclick="api('/api/items/${it.id}/flag',{state:'low'})">Running low</button>
+             <button class="act warn" onclick="api('/api/items/${it.id}/flag',{state:'empty'})">Empty</button>`:
+             `<button class="act prim" onclick="bought('${it.id}')">I bought it</button>`}
+          ${me===S.admin?`<button class="act ghost" onclick="api('/api/items/${it.id}?who=${me}',null,'DELETE')">remove</button>`:''}
+        </div></div>`;
+    });
+  });
+  if(S.proposals.length){
+    html+=`<h2 class="sec">Proposed — needs votes</h2>`;
+    S.proposals.forEach(p=>{
+      const yesList=S.people.filter(pp=>p.votes[pp]==='yes');
+      html+=`<div class="card prop">
+        <div class="name">${p.name} <span class="hint">→ ${p.section}</span></div>
+        <div class="meta">Proposed by ${p.by} · yes-voters will share this: ${yesList.length?yesList.join(", "):'—'}</div>
+        <div class="votes">${S.people.map(pp=>`<span class="vote ${p.votes[pp]||''}">${pp}: ${p.votes[pp]||'—'}</span>`).join("")}</div>
+        <div class="btns">${p.votes[me]?`<span class="hint">You voted ${p.votes[me]}</span>`:
+          `<button class="act prim" onclick="api('/api/proposals/${p.id}/vote',{vote:'yes'})">👍 Yes, I use it</button>
+           <button class="act warn" onclick="api('/api/proposals/${p.id}/vote',{vote:'no'})">👎 No, skip me</button>`}</div>
+        <div class="hint">Goes live once all ${S.people.length} have voted — added to the rotation of whoever voted yes.</div>
+      </div>`;
+    });
+  }
+  html+=`<button class="add" onclick="proposeSheet()">＋ Propose a new item (needs a vote)</button>`;
+  return html;
+}
+
+function choreView(){
+  let html=`<h2 class="sec">Chores</h2>`;
+  S.chores.forEach(c=>{
+    const st=choreState(c), tp=turnPerson(c), dd=dueDays(c);
+    const dueTxt=c.urgent?"⚠️ flagged: needs doing now":dd<0?`Overdue by ${-dd} day${dd!==-1?'s':''}`:dd===0?"Due today":`Reminder in ${dd} day${dd!==1?'s':''}`;
+    html+=`<div class="card"><div class="row">
+      <span class="dot ${st==='ok'?'g':st==='yellow'?'y':'r'}"></span>
+      <div style="flex:1"><div class="name">${c.name} ${c.layers?`<span class="hint" onclick="toggleLayers('${c.id}')" style="cursor:pointer">▸ layers</span>`:''}</div>
+        <div class="meta">${dueTxt} · reminder every ${c.interval}d<br>${c.mode==='fixedpair'?`pair: ${c.pair.join(" & ")} · `:''}whose turn: ${tp}${tp===me?' (you)':''} — stays until done</div></div>
+      <div class="turn">${av(tp)}<span>${tp}</span></div></div>
+      ${c.layers?`<div class="layers ${expanded[c.id]?'open':''}">
+        ${c.layers.map((l,i)=>`<label class="layer"><input type="checkbox" ${l.done?'checked':''} onchange="api('/api/chores/${c.id}/layer',{index:${i}})">
+          <span>${l.name}</span>${l.by?`<span class="by">by ${l.by}</span>`:''}</label>`).join("")}</div>`:''}
+      <div class="btns">
+        ${c.mode==='any'?
+          `<button class="act prim" onclick="api('/api/chores/${c.id}/done',{kind:'solo'})">I did it (solo · 1pt)</button>
+           <button class="act" onclick="pairSheet('${c.id}')">Did it as a pair (0.5 each)</button>`
+         :c.mode==='fixedpair'?
+          `<button class="act prim" onclick="api('/api/chores/${c.id}/done',{kind:'solo'})">I did it (1pt)</button>
+           <button class="act" onclick="api('/api/chores/${c.id}/done',{kind:'pairfixed'})">We did it together (0.5 each)</button>`
+         :`<button class="act prim" onclick="api('/api/chores/${c.id}/done',{kind:'solo'})">I did it (1pt)</button>`}
+        <button class="act warn" onclick="api('/api/chores/${c.id}/flag')">Needs doing now 🔔</button>
+        <button class="act ghost" onclick="editInterval('${c.id}')">edit interval</button>
+      </div></div>`;
+  });
+  return html;
+}
+let expanded={};
+function toggleLayers(id){ expanded[id]=!expanded[id]; render(); }
+
+function scoreView(){
+  const spend={},pts={};
+  S.people.forEach(p=>{spend[p]=0;pts[p]=0;});
+  S.items.forEach(i=>i.buys.forEach(b=>spend[b.who]=(spend[b.who]||0)+b.cost));
+  S.chores.forEach(c=>c.log.forEach(l=>l.who.forEach(w=>pts[w]=(pts[w]||0)+l.pts)));
+  const maxS=Math.max(1,...Object.values(spend)), maxP=Math.max(1,...Object.values(pts));
+  let html=`<h2 class="sec">💶 Shopping spend</h2>`;
+  S.people.forEach(p=>html+=`<div class="score">${av(p,'avatar')}<span style="width:64px">${p}</span>
+    <div class="bar"><span style="width:${spend[p]/maxS*100}%;background:${COLORS[p]}"></span></div>
+    <div class="val">€${spend[p].toFixed(2)}</div></div>`);
+  html+=`<h2 class="sec">🧹 Chore effort points</h2>`;
+  S.people.forEach(p=>html+=`<div class="score">${av(p,'avatar')}<span style="width:64px">${p}</span>
+    <div class="bar"><span style="width:${pts[p]/maxP*100}%;background:${COLORS[p]}"></span></div>
+    <div class="val">${pts[p].toFixed(1)} pts</div></div>`);
+  html+=`<p class="hint" style="margin-top:14px">Solo = 1 pt · pair = 0.5 each, so a pair must do it twice to match one solo turn.</p>`;
+  return html;
+}
+
+// ---------- sheets ----------
+function bought(id){
+  const it=S.items.find(x=>x.id===id);
+  openSheet(`<h3>Bought ${it.name}</h3>
+    <div class="field"><label>What did it cost? (€)</label><input id="cost" type="number" inputmode="decimal" placeholder="0.00" value="2.00"></div>
+    <button class="act prim" style="width:100%;padding:12px" onclick="confirmBought('${id}')">Confirm — mark in stock</button>`);
+}
+function confirmBought(id){
+  const cost=parseFloat(document.getElementById("cost").value)||0;
+  closeSheet(); api(`/api/items/${id}/buy`,{cost});
+}
+function pairSheet(id){
+  const others=S.people.filter(p=>p!==me);
+  openSheet(`<h3>Did it as a pair</h3><p class="hint">You + who? You each get 0.5 pt.</p>
+    <div class="field"><div class="chips">${others.map(p=>`<span class="pchip" onclick="this.classList.toggle('on')" data-p="${p}">${p}</span>`).join("")}</div></div>
+    <button class="act prim" style="width:100%;padding:12px" onclick="confirmPair('${id}')">Confirm</button>`);
+}
+function confirmPair(id){
+  const partners=[...document.querySelectorAll(".pchip.on")].map(e=>e.dataset.p);
+  closeSheet(); api(`/api/chores/${id}/done`,{kind:'pair',partners});
+}
+function editInterval(id){
+  const c=S.chores.find(x=>x.id===id);
+  openSheet(`<h3>Interval for ${c.name}</h3>
+    <div class="field"><label>Remind every … days</label><input id="iv" type="number" value="${c.interval}"></div>
+    <button class="act prim" style="width:100%;padding:12px" onclick="saveInterval('${id}')">Save</button>`);
+}
+function saveInterval(id){
+  const iv=parseInt(document.getElementById("iv").value); closeSheet();
+  if(iv) api(`/api/chores/${id}/interval`,{interval:iv});
+}
+function proposeSheet(){
+  openSheet(`<h3>Propose a new item</h3>
+    <p class="hint" style="margin:0 0 12px">Everyone votes 👍/👎. Whoever votes yes joins this item's rotation — a no-voter is skipped and never has to buy it.</p>
+    <div class="field"><label>Item name</label><input id="pname" placeholder="e.g. Paneer"></div>
+    <div class="field"><label>Section</label><select id="psec"><option>Kitchen</option><option>Bathroom</option><option>Bedroom</option><option>Hall</option></select></div>
+    <button class="act prim" style="width:100%;padding:12px" onclick="submitProposal()">Send for vote</button>`);
+}
+function submitProposal(){
+  const name=document.getElementById("pname").value.trim(); if(!name) return;
+  const section=document.getElementById("psec").value; closeSheet();
+  api("/api/proposals",{name,section});
+}
+
+function openSheet(html){ document.getElementById("sheet").innerHTML=html+`<div style="height:6px"></div><button class="act ghost" style="width:100%" onclick="closeSheet()">cancel</button>`; document.getElementById("modal").classList.add("open"); }
+function closeSheet(){ document.getElementById("modal").classList.remove("open"); }
+document.getElementById("modal").addEventListener("click",e=>{if(e.target.id==="modal")closeSheet();});
+
+load();
+</script>

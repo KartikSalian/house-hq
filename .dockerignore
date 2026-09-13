@@ -1,0 +1,7 @@
+house.db
+admin_recovery.txt
+__pycache__/
+*.pyc
+.git/
+.gitignore
+run.bat
