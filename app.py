@@ -99,7 +99,7 @@ def init_db():
     if c.execute("SELECT COUNT(*) FROM items").fetchone()[0] == 0:
         seed_items = [
             ("Onion", "Kitchen", PEOPLE), ("Tomatoes", "Kitchen", PEOPLE),
-            ("Milk", "Kitchen", PEOPLE), ("Chicken", "Kitchen", ["Kartik", "Kalyan", "Parva"]),
+            ("Milk", "Kitchen", PEOPLE), ("Chicken", "Kitchen", ["Kartik", "Kalyan", "Gautami"]),
             ("Ginger", "Kitchen", PEOPLE), ("Garlic", "Kitchen", PEOPLE),
             ("Ginger paste", "Kitchen", PEOPLE), ("Garlic paste", "Kitchen", PEOPLE),
             ("Kitchen tissue", "Kitchen", PEOPLE), ("Toilet paper", "Bathroom", PEOPLE),

@@ -151,6 +151,16 @@
     color:var(--muted);padding:3px 8px;border-radius:8px;margin-left:auto;font-weight:600}
   .hint{color:var(--muted);font-size:11.5px;margin-top:6px;line-height:1.5}
   .loading{color:var(--muted);text-align:center;padding:60px 0;font-size:15px}
+  .searchbar{position:relative;margin:14px 0 4px}
+  .search{width:100%;background:var(--glass);border:1px solid var(--glass-line);color:var(--txt);
+    border-radius:14px;padding:12px 38px 12px 40px;font-size:15px;outline:none;
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);transition:.2s}
+  .search:focus{border-color:var(--accent);background:var(--glass-strong)}
+  .search::placeholder{color:var(--muted)}
+  .sicon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;opacity:.7}
+  .sclear{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;
+    color:var(--muted);font-size:14px;width:20px;height:20px;display:grid;place-items:center;border-radius:50%}
+  .sclear:hover{background:var(--glass-strong);color:var(--txt)}
 </style>
 
 <div class="wrap" id="app"><div class="loading">Loading…</div></div>
@@ -169,6 +179,8 @@ let S={people:[],admin:null,hasPin:{},items:[],chores:[],proposals:[]};
 let me=localStorage.getItem("hq_me")||null;
 let token=localStorage.getItem("hq_token")||null;
 let tab=localStorage.getItem("hq_tab")||"shop";
+let q="";           // shopping search query
+let searchFocus=false;
 
 async function load(){
   try{
@@ -233,6 +245,11 @@ function render(){
      </div>
    </header>
    ${tab==='shop'?shopView():tab==='chores'?choreView():scoreView()}`;
+  if(searchFocus&&tab==='shop'){
+    const s=document.getElementById("search");
+    if(s){ s.focus(); const v=s.value; s.setSelectionRange(v.length,v.length); }
+    searchFocus=false;
+  }
 }
 function setTab(t){ tab=t; localStorage.setItem("hq_tab",t); render(); }
 async function logout(){
@@ -325,10 +342,19 @@ async function doLogin(p){
 
 function shopView(){
   const sections=["Kitchen","Bathroom","Bedroom","Hall"];
-  let html="";
+  const ql=q.trim().toLowerCase();
+  let html=`<div class="searchbar">
+    <span class="sicon">🔍</span>
+    <input id="search" class="search" placeholder="Search items…" value="${q.replace(/"/g,'&quot;')}"
+      oninput="q=this.value;searchFocus=true;render()">
+    ${q?`<span class="sclear" onclick="q='';searchFocus=true;render()">✕</span>`:''}
+  </div>`;
+  let anyMatch=false;
   sections.forEach(s=>{
-    const list=S.items.filter(i=>i.section===s);
+    const list=S.items.filter(i=>i.section===s && i.name.toLowerCase().includes(ql));
+    if(ql && !list.length) return; // hide empty sections while searching
     html+=`<h2 class="sec">${s}</h2>`;
+    if(list.length) anyMatch=true;
     if(!list.length) html+=`<div class="hint" style="margin:0 4px 8px">No items yet</div>`;
     list.forEach(it=>{
       const st=itemState(it), tp=turnPerson(it);
@@ -347,6 +373,10 @@ function shopView(){
         </div></div>`;
     });
   });
+  if(ql){
+    if(!anyMatch) html+=`<div class="hint" style="text-align:center;padding:20px 0">No items match “${q}”.</div>`;
+    return html; // while searching, hide proposals + add button
+  }
   if(S.proposals.length){
     html+=`<h2 class="sec">Proposed — needs votes</h2>`;
     S.proposals.forEach(p=>{

@@ -1,25 +1,26 @@
-# Fly.io config for House HQ
-# NOTE: 'app' must be globally unique — change it, or let `fly launch` set it.
-app = "house-hq-CHANGEME"
-primary_region = "dub"   # Dublin, closest to Galway
+# fly.toml app configuration file generated for house-hq-kartik on 2026-09-13T18:52:07+01:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'house-hq-kartik'
+primary_region = 'lhr'
 
 [build]
-
 [env]
-  DB_PATH = "/data/house.db"   # database lives on the persistent volume
+  DB_PATH = '/data/house.db'
 
-# Persistent volume so your SQLite data survives restarts/redeploys
 [[mounts]]
-  source = "house_data"
-  destination = "/data"
+  source = 'house_data'
+  destination = '/data'
 
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = true
+  auto_stop_machines = 'stop'
   auto_start_machines = true
-  min_machines_running = 1     # keep one always on so data + reminders stay live
+  min_machines_running = 1
 
 [[vm]]
-  size = "shared-cpu-1x"
-  memory = "256mb"
+  size = 'shared-cpu-1x'
+  memory = '256mb'
